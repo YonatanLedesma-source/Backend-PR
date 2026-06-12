@@ -20,7 +20,7 @@ import com.proyecto.service.MedidorService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/api/medidor")
+@RequestMapping("/api/medidores")
 @CrossOrigin(origins = "*")
 @Tag(name = "Medidor", description = "API para gestión de medidores")
 public class MedidorController {

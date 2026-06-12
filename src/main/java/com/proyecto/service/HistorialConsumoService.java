@@ -9,12 +9,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.proyecto.model.HistorialConsumo;
+import com.proyecto.model.Cliente;
+import com.proyecto.model.Medidor;
 import com.proyecto.repository.HistorialConsumoRepository;
+import com.proyecto.repository.ClienteRepository;
+import com.proyecto.repository.MedidorRepository;
 
 @Service
 public class HistorialConsumoService {
     @Autowired
     private HistorialConsumoRepository historialConsumoRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
+    private MedidorRepository medidorRepository;
 
     /* Para obtener todos los registros de historial de consumo */
     public List<HistorialConsumo> listarHistorialConsumo(){
@@ -45,8 +55,46 @@ public class HistorialConsumoService {
     }
 
     /* Para crear un nuevo historial de consumo */
-
     public HistorialConsumo crearHistorialConsumo(HistorialConsumo historialConsumo){
+        // Si el cliente no está asociado, intentamos resolverlo usando idMedidor
+        if (historialConsumo.getCliente() == null) {
+            Long idMed = historialConsumo.getIdMedidor();
+            if (idMed != null) {
+                // 1. Intentar buscar Cliente por ID de cliente
+                Optional<Cliente> clienteOpt = clienteRepository.findById(idMed);
+                if (clienteOpt.isPresent()) {
+                    historialConsumo.setCliente(clienteOpt.get());
+                } else {
+                    // 2. Intentar buscar Cliente por número de medidor
+                    clienteOpt = clienteRepository.findByNumeroMedidor(idMed.intValue());
+                    if (clienteOpt.isPresent()) {
+                        historialConsumo.setCliente(clienteOpt.get());
+                    } else {
+                        // 3. Intentar buscar Medidor por ID de medidor
+                        Optional<Medidor> medidorOpt = medidorRepository.findById(idMed);
+                        if (medidorOpt.isPresent()) {
+                            historialConsumo.setCliente(medidorOpt.get().getCliente());
+                        } else {
+                            // 4. Intentar buscar Medidor por número de medidor
+                            medidorOpt = medidorRepository.findByNumeroMedidor(idMed.intValue());
+                            if (medidorOpt.isPresent()) {
+                                historialConsumo.setCliente(medidorOpt.get().getCliente());
+                            } else {
+                                throw new IllegalArgumentException("No se encontró ningún cliente o medidor para el ID/número de medidor: " + idMed);
+                            }
+                        }
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException("El cliente o el ID del medidor es obligatorio para registrar en el historial.");
+            }
+        }
+
+        // Asignar fecha de lectura por defecto si es nula
+        if (historialConsumo.getFechaLectura() == null) {
+            historialConsumo.setFechaLectura(LocalDate.now());
+        }
+
         return historialConsumoRepository.save(historialConsumo);
     }
 

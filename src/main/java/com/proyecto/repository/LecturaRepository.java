@@ -3,8 +3,11 @@ package com.proyecto.repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.proyecto.model.Lectura;
@@ -28,5 +31,7 @@ public interface LecturaRepository extends JpaRepository<Lectura, Long>{
 
     Optional<Lectura> findByFechaLectura(LocalDate fechaLectura);
 
-    
+    /* Buscar la lectura más reciente de un medidor */
+    @Query("SELECT l FROM Lectura l WHERE l.medidor.id_med = :idMed ORDER BY l.fechaLectura DESC, l.id_lec DESC")
+    List<Lectura> findLatestByMedidorId(@Param("idMed") Long idMed, org.springframework.data.domain.Pageable pageable);
 }

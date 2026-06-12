@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.model.Cliente;
@@ -52,8 +53,8 @@ public class ClienteController {
     }
 
         /* GET para obtener cliente por cedula */
-        @GetMapping("/cedula/{cedula}")
-        public ResponseEntity<Cliente> obtenerPorCedula(@PathVariable Integer cedula){
+        @GetMapping("/cedula")
+        public ResponseEntity<Cliente> obtenerPorCedula(@RequestParam("cedula") Integer cedula){
             return clienteService.obtenerPorCedula(cedula)
             .map(cliente -> ResponseEntity.ok(cliente))
             .orElse(ResponseEntity.notFound().build());
