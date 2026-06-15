@@ -43,6 +43,6 @@ public class Medidor {
     private Operador operador;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_presi", nullable = false)
-    private Presidente presidente;
+    @JoinColumn(name = "id_adm", nullable = false)
+    private Administrador administrador;
 }

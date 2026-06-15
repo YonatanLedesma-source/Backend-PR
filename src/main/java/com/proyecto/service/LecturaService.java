@@ -92,27 +92,13 @@ public class LecturaService {
                 .orElseThrow(() -> new IllegalArgumentException("No se encontró el medidor con ID: " + finalIdMed));
         lectura.setMedidor(medidor);
 
-        // 2. Resolver Cliente y Presidente directamente desde el Medidor
-        lectura.setCliente(medidor.getCliente());
-        lectura.setPresidente(medidor.getPresidente());
-
-        // 3. Resolver Operador
-        Long idOper = lectura.getIdOperador();
-        if (idOper != null && idOper > 0) {
-            operadorRepository.findById(idOper).ifPresent(lectura::setOperador);
-        }
-        if (lectura.getOperador() == null) {
-            lectura.setOperador(medidor.getOperador());
-        }
-
-        // 4. Resolver Administrador (usar el primero registrado en la base de datos)
-        if (lectura.getAdministrador() == null) {
-            List<Administrador> admins = administradorRepository.findAll();
-            if (!admins.isEmpty()) {
-                lectura.setAdministrador(admins.get(0));
-            } else {
-                throw new IllegalStateException("No hay ningún administrador registrado en la base de datos para asociar a la lectura.");
-            }
+        // 2. Obtener Administrador (usar el primero registrado en la base de datos para la factura)
+        Administrador admin = null;
+        List<Administrador> admins = administradorRepository.findAll();
+        if (!admins.isEmpty()) {
+            admin = admins.get(0);
+        } else {
+            throw new IllegalStateException("No hay ningún administrador registrado en la base de datos para asociar a la factura.");
         }
 
         // 5. Asignar valorActual desde el campo transitorio valorLectura si corresponde
@@ -172,15 +158,15 @@ public class LecturaService {
         factura.setLecturaNueva(savedLectura.getValorActual());
         factura.setConsumo(savedLectura.getConsumoM3());
 
-        factura.setCliente(savedLectura.getCliente());
-        factura.setOperador(savedLectura.getOperador());
-        factura.setAdministrador(savedLectura.getAdministrador());
+        factura.setCliente(medidor.getCliente());
+        factura.setOperador(medidor.getOperador());
+        factura.setAdministrador(admin);
         factura.setLectura(savedLectura);
 
         // Resolver financiación activa
         BigDecimal valorCuota = BigDecimal.ZERO;
-        if (savedLectura.getCliente() != null) {
-            List<Financiacion> activeFinans = financiacionRepository.findActiveByClienteId(savedLectura.getCliente().getId_cli());
+        if (medidor.getCliente() != null) {
+            List<Financiacion> activeFinans = financiacionRepository.findActiveByClienteId(medidor.getCliente().getId_cli());
             if (activeFinans != null && !activeFinans.isEmpty()) {
                 Financiacion activeFinan = activeFinans.get(0);
                 float cuota = activeFinan.getCuotaMensual() != null ? activeFinan.getCuotaMensual() : 0.0f;
@@ -210,7 +196,7 @@ public class LecturaService {
         facturaRepository.save(factura);
 
         // Actualizar lectura acumulada del Cliente
-        Cliente cliente = savedLectura.getCliente();
+        Cliente cliente = medidor.getCliente();
         if (cliente != null && savedLectura.getValorActual() != null) {
             cliente.setLectura(savedLectura.getValorActual().floatValue());
             clienteRepository.save(cliente);

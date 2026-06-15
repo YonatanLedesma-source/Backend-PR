@@ -40,21 +40,6 @@ public class Lectura {
     @JoinColumn(name = "id_med", nullable = false)
     private Medidor medidor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_oper", nullable = false)
-    private Operador operador;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_cli", nullable = false)
-    private Cliente cliente;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_adm", nullable = false)
-    private Administrador administrador;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_presi", nullable = false)
-    private Presidente presidente;
 
     // Campos transitorios para compatibilidad con el frontend
     @Transient
@@ -64,10 +49,6 @@ public class Lectura {
     @Transient
     @JsonProperty("idMedidor")
     private Long idMedidor;
-
-    @Transient
-    @JsonProperty("idOperador")
-    private Long idOperador;
 
     @Transient
     @JsonProperty("fechaToma")
@@ -100,16 +81,6 @@ public class Lectura {
     @JsonProperty("idMedidor")
     public void setIdMedidor(Long idMedidor) {
         this.idMedidor = idMedidor;
-    }
-
-    @JsonProperty("idOperador")
-    public Long getIdOperador() {
-        return this.operador != null ? this.operador.getId_oper() : this.idOperador;
-    }
-
-    @JsonProperty("idOperador")
-    public void setIdOperador(Long idOperador) {
-        this.idOperador = idOperador;
     }
 
     @JsonProperty("fechaToma")

@@ -44,7 +44,4 @@ public class Financiacion {
     @JoinColumn(name = "id_adm", nullable = false)
     private Administrador administrador;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_presi", nullable = false)
-    private Presidente presidente;
 }

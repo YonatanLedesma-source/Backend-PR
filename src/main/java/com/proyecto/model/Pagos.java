@@ -44,18 +44,10 @@ public class Pagos {
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "id_fac", nullable = true)
         private Factura factura;
-
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "id_presi", nullable = true)
-        private Presidente presidente;
-
+        
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "id_cli", nullable = false)
         private Cliente cliente;
-
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "id_oper", nullable = true)
-        private Operador operador;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "id_adm", nullable = true)
