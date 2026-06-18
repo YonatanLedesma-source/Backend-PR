@@ -34,4 +34,7 @@ public interface LecturaRepository extends JpaRepository<Lectura, Long>{
     /* Buscar la lectura más reciente de un medidor */
     @Query("SELECT l FROM Lectura l WHERE l.medidor.id_med = :idMed ORDER BY l.fechaLectura DESC, l.id_lec DESC")
     List<Lectura> findLatestByMedidorId(@Param("idMed") Long idMed, org.springframework.data.domain.Pageable pageable);
+
+    @Query("SELECT l FROM Lectura l WHERE l.medidor.id_med = :idMed ORDER BY l.fechaLectura DESC")
+    List<Lectura> findAllByMedidorId(@Param("idMed") Long idMed);
 }

@@ -69,8 +69,7 @@ public class FinanciacionController {
     /* PUT para actualizar una financiacion existente */
     @PutMapping("/{id}")
     public Financiacion actualizarFinanciacion(@PathVariable Long id, @RequestBody Financiacion financiacion) {
-        financiacion.setId_finan(id);
-        return financiacionService.guardarFinanciacion(financiacion);
+        return financiacionService.actualizarFinanciacion(id, financiacion);
     }
 
     /* DELETE para eliminar una financiacion */

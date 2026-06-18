@@ -55,7 +55,26 @@ public class FinanciacionService {
     }
 
     /* Para actualizar una financiacion */
-    public Financiacion actualizarFinanciacion(Financiacion financiacion) {
-        return financiacionRepository.save(financiacion);
+    public Financiacion actualizarFinanciacion(Long id, Financiacion financiacionActualizada) {
+        Financiacion finanExistente = financiacionRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("No se encontró la financiacion con ID: " + id));
+
+        if (financiacionActualizada.getMontoTotal() != null) {
+            finanExistente.setMontoTotal(financiacionActualizada.getMontoTotal());
+        }
+        if (financiacionActualizada.getNumeroCuotas() != null) {
+            finanExistente.setNumeroCuotas(financiacionActualizada.getNumeroCuotas());
+        }
+        if (financiacionActualizada.getCuotaMensual() != null) {
+            finanExistente.setCuotaMensual(financiacionActualizada.getCuotaMensual());
+        }
+        if (financiacionActualizada.getSaldoPendiente() != null) {
+            finanExistente.setSaldoPendiente(financiacionActualizada.getSaldoPendiente());
+        }
+        if (financiacionActualizada.getConcepto() != null) {
+            finanExistente.setConcepto(financiacionActualizada.getConcepto());
+        }
+
+        return financiacionRepository.save(finanExistente);
     }
 }

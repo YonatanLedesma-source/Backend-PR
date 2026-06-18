@@ -52,6 +52,10 @@ public class LecturaService {
         return lecturaRepository.findAll();
     }
 
+    public List<Lectura> listarLecturasPorMedidor(Long idMedidor) {
+        return lecturaRepository.findAllByMedidorId(idMedidor);
+    }
+
     /* Para obtener un lectura por zona */
     public Optional<Lectura> obtenerPorZona(String zona){
         return lecturaRepository.findByZona(zona);
@@ -217,8 +221,26 @@ public class LecturaService {
     }
 
     /* Para actualizar una lectura existente */
-    public Lectura actualizarLectura(Lectura lectura){
-        return lecturaRepository.save(lectura);
+    public Lectura actualizarLectura(Long id, Lectura lecturaActualizada){
+        Lectura lecturaExistente = lecturaRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("No se encontró la lectura con ID: " + id));
+            
+        if (lecturaActualizada.getValorLectura() != null) {
+            lecturaExistente.setValorActual(lecturaActualizada.getValorLectura());
+            if (lecturaExistente.getValorAnterior() != null) {
+                lecturaExistente.setConsumoM3(lecturaExistente.getValorActual().subtract(lecturaExistente.getValorAnterior()));
+            } else {
+                lecturaExistente.setConsumoM3(lecturaExistente.getValorActual());
+            }
+        }
+        if (lecturaActualizada.getFechaToma() != null) {
+            lecturaExistente.setFechaLectura(lecturaActualizada.getFechaToma());
+        }
+        if (lecturaActualizada.getObservaciones() != null) {
+            lecturaExistente.setZona(lecturaActualizada.getObservaciones());
+        }
+        
+        return lecturaRepository.save(lecturaExistente);
     }
 
 }
